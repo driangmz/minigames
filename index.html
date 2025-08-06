@@ -146,6 +146,55 @@
         .animate-bounce {
             animation: bounce 0.5s ease-in-out;
         }
+
+        /* Color Mixer specific styles */
+        .color-box {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            border: 2px solid #ccc;
+        }
+        .color-slider {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 10px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+        .color-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+        .color-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+
+        /* Number Sorter styles */
+        .number-sorter-item {
+            display: inline-block;
+            background-color: #6366f1; /* Indigo-500 */
+            color: white;
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            font-size: 1.25rem;
+            min-width: 50px;
+            text-align: center;
+        }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -317,6 +366,194 @@
                     `;
                     initializeGuessTheColor();
                     break;
+                case 'wordScramble':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">🔠 Word Scramble!</h2>
+                        <p class="text-lg text-gray-700 mb-4">Unscramble the word!</p>
+                        <div class="mb-4">
+                            <label for="wordLength" class="block text-gray-700 text-sm font-bold mb-2">Word Length:</label>
+                            <select id="wordLength" onchange="initializeWordScramble()" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="easy">Easy (4-5 letters)</option>
+                                <option value="medium">Medium (6-7 letters)</option>
+                                <option value="hard">Hard (8+ letters)</option>
+                            </select>
+                        </div>
+                        <p id="scrambledWord" class="text-4xl font-extrabold text-purple-700 mb-6 tracking-widest"></p>
+                        <input type="text" id="scrambleGuessInput" class="p-3 border-2 border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-full max-w-xs text-center text-xl" placeholder="Your guess">
+                        <button onclick="checkWordScrambleGuess()" class="mt-4 px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 transition duration-300 ease-in-out transform hover:scale-105">Submit Guess</button>
+                        <p id="scrambleMessage" class="mt-6 text-xl font-medium text-gray-800"></p>
+                        <button onclick="initializeWordScramble()" class="mt-4 px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300 ease-in-out">New Word</button>
+                    `;
+                    initializeWordScramble();
+                    break;
+                case 'typingSpeedTest':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">⌨️ Typing Speed Test!</h2>
+                        <p class="text-lg text-gray-700 mb-4">Type the text below as fast as you can!</p>
+                        <div class="mb-4">
+                            <label for="typingTextChoice" class="block text-gray-700 text-sm font-bold mb-2">Text Length:</label>
+                            <select id="typingTextChoice" onchange="initializeTypingSpeedTest()" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="short">Short Phrase</option>
+                                <option value="long">Longer Paragraph</option>
+                            </select>
+                        </div>
+                        <p id="typingTextDisplay" class="bg-gray-100 p-4 rounded-lg border border-gray-300 text-lg text-gray-800 mb-6 text-center"></p>
+                        <textarea id="typingInput" oninput="startTypingTest()" class="p-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full max-w-xl h-24 text-lg" placeholder="Start typing here..."></textarea>
+                        <p id="typingResult" class="mt-6 text-xl font-medium text-gray-800"></p>
+                        <button onclick="initializeTypingSpeedTest()" class="mt-4 px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300 ease-in-out">Reset Test</button>
+                    `;
+                    initializeTypingSpeedTest();
+                    break;
+                case 'quickMath':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">➕ Quick Math!</h2>
+                        <p class="text-lg text-gray-700 mb-4">Solve the equation!</p>
+                        <div class="mb-4">
+                            <label for="mathOperation" class="block text-gray-700 text-sm font-bold mb-2">Operation:</label>
+                            <select id="mathOperation" onchange="generateMathProblem()" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="add">Addition (+)</option>
+                                <option value="subtract">Subtraction (-)</option>
+                                <option value="multiply">Multiplication (x)</option>
+                                <option value="divide">Division (/)</option>
+                            </select>
+                        </div>
+                        <p id="mathProblem" class="text-4xl font-extrabold text-blue-700 mb-6"></p>
+                        <input type="number" id="mathAnswerInput" class="p-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full max-w-xs text-center text-xl" placeholder="Your answer">
+                        <button onclick="checkMathAnswer()" class="mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105">Submit Answer</button>
+                        <p id="mathMessage" class="mt-6 text-xl font-medium text-gray-800"></p>
+                        <button onclick="generateMathProblem()" class="mt-4 px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300 ease-in-out">New Problem</button>
+                    `;
+                    generateMathProblem();
+                    break;
+                case 'colorMixer':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">🌈 Color Mixer!</h2>
+                        <p class="text-lg text-gray-700 mb-4">Mix colors or guess the mix!</p>
+                        <div class="mb-4">
+                            <label for="colorMixerMode" class="block text-gray-700 text-sm font-bold mb-2">Mode:</label>
+                            <select id="colorMixerMode" onchange="initializeColorMixer()" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="mix">Mix Colors</option>
+                                <option value="guess">Guess the Color</option>
+                            </select>
+                        </div>
+                        <div id="colorMixerContent" class="w-full flex flex-col items-center">
+                            <!-- Content will be loaded by JS -->
+                        </div>
+                    `;
+                    initializeColorMixer();
+                    break;
+                case 'countdownTimer':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">⏰ Countdown Timer!</h2>
+                        <p class="text-lg text-gray-700 mb-4">Set a time and watch it count down!</p>
+                        <div class="mb-4">
+                            <label for="timerInput" class="block text-gray-700 text-sm font-bold mb-2">Set Time (seconds):</label>
+                            <input type="number" id="timerInput" value="60" min="1" class="p-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full max-w-xs text-center text-xl">
+                        </div>
+                        <button onclick="startCountdown()" id="startButton" class="mt-4 px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-300 ease-in-out transform hover:scale-105">Start Countdown</button>
+                        <p id="countdownDisplay" class="mt-6 text-5xl font-extrabold text-red-600"></p>
+                        <button onclick="resetCountdown()" id="resetCountdownButton" class="mt-4 px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300 ease-in-out hidden">Reset Timer</button>
+                    `;
+                    initializeCountdownTimer();
+                    break;
+                case 'numberSorter':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">🔢 Number Sorter!</h2>
+                        <p class="text-lg text-gray-700 mb-4">Arrange the numbers from smallest to largest.</p>
+                        <div class="mb-4">
+                            <label for="numElements" class="block text-gray-700 text-sm font-bold mb-2">Number of Elements:</label>
+                            <select id="numElements" onchange="initializeNumberSorter()" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="5">5 Numbers</option>
+                                <option value="7">7 Numbers</option>
+                                <option value="10">10 Numbers</option>
+                            </select>
+                        </div>
+                        <div id="numberSorterContainer" class="flex flex-wrap justify-center mb-6 p-4 border-2 border-indigo-300 rounded-lg bg-indigo-50 min-h-[100px]">
+                            <!-- Numbers will be draggable here -->
+                        </div>
+                        <p id="sorterMessage" class="mt-6 text-xl font-medium text-gray-800"></p>
+                        <button onclick="checkNumberSorter()" class="mt-4 px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300 ease-in-out transform hover:scale-105">Check Order</button>
+                        <button onclick="initializeNumberSorter()" class="mt-4 px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300 ease-in-out">New Numbers</button>
+                    `;
+                    initializeNumberSorter();
+                    break;
+                case 'shapeGuesser':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">🔺 Shape Guesser!</h2>
+                        <p class="text-lg text-gray-700 mb-4">What shape am I thinking of?</p>
+                        <div class="mb-4">
+                            <label for="shapeDifficulty" class="block text-gray-700 text-sm font-bold mb-2">Difficulty:</label>
+                            <select id="shapeDifficulty" onchange="initializeShapeGuesser()" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="basic">Basic Shapes</option>
+                                <option value="complex">Complex Polygons</option>
+                            </select>
+                        </div>
+                        <div id="shapeDisplay" class="w-48 h-48 flex items-center justify-center bg-gray-100 rounded-lg shadow-inner mb-6">
+                            <!-- SVG shape will be drawn here -->
+                        </div>
+                        <input type="text" id="shapeGuessInput" class="p-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full max-w-xs text-center text-xl" placeholder="Your guess">
+                        <button onclick="checkShapeGuess()" class="mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105">Submit Guess</button>
+                        <p id="shapeMessage" class="mt-6 text-xl font-medium text-gray-800"></p>
+                        <button onclick="initializeShapeGuesser()" class="mt-4 px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300 ease-in-out">New Shape</button>
+                    `;
+                    initializeShapeGuesser();
+                    break;
+                case 'palindromeChecker':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">🔄 Palindrome Checker!</h2>
+                        <p class="text-lg text-gray-700 mb-4">Enter a word or number to check if it's a palindrome.</p>
+                        <div class="mb-4">
+                            <label for="palindromeType" class="block text-gray-700 text-sm font-bold mb-2">Check Type:</label>
+                            <select id="palindromeType" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="word">Word</option>
+                                <option value="number">Number</option>
+                            </select>
+                        </div>
+                        <input type="text" id="palindromeInput" class="p-3 border-2 border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-full max-w-xs text-center text-xl" placeholder="Enter text or number">
+                        <button onclick="checkPalindrome()" class="mt-4 px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-300 ease-in-out transform hover:scale-105">Check</button>
+                        <p id="palindromeResult" class="mt-6 text-xl font-medium text-gray-800"></p>
+                    `;
+                    break;
+                case 'randomFactGenerator':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">💡 Random Fact!</h2>
+                        <p class="text-lg text-gray-700 mb-4">Get a random interesting fact!</p>
+                        <div class="mb-4">
+                            <label for="factCategory" class="block text-gray-700 text-sm font-bold mb-2">Category:</label>
+                            <select id="factCategory" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="animals">Animals</option>
+                                <option value="history">History</option>
+                                <option value="science">Science</option>
+                                <option value="random">Random</option>
+                            </select>
+                        </div>
+                        <button onclick="generateFact()" class="mt-4 px-8 py-4 bg-orange-500 text-white font-semibold rounded-lg shadow-md hover:bg-orange-600 transition duration-300 ease-in-out transform hover:scale-105 text-2xl">Get Fact</button>
+                        <p id="factDisplay" class="mt-6 text-xl font-medium text-gray-800 text-center"></p>
+                    `;
+                    break;
+                case 'unitConverter':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">📏 Unit Converter!</h2>
+                        <p class="text-lg text-gray-700 mb-4">Convert between different units.</p>
+                        <div class="mb-4">
+                            <label for="conversionType" class="block text-gray-700 text-sm font-bold mb-2">Conversion Type:</label>
+                            <select id="conversionType" onchange="setupUnitConverter()" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="length">Length</option>
+                                <option value="weight">Weight</option>
+                                <option value="temperature">Temperature</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
+                            <input type="number" id="inputValue" class="p-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto text-center text-xl" placeholder="Value">
+                            <select id="inputUnit" class="p-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto text-xl"></select>
+                            <span class="text-2xl font-bold text-gray-700">➡️</span>
+                            <select id="outputUnit" class="p-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto text-xl"></select>
+                        </div>
+                        <button onclick="convertUnit()" class="mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105">Convert</button>
+                        <p id="conversionResult" class="mt-6 text-xl font-medium text-gray-800"></p>
+                    `;
+                    setupUnitConverter();
+                    break;
                 case 'comingSoon':
                     gameContentDiv.classList.add('justify-center', 'items-center'); // Center content for coming soon
                     gameContentDiv.innerHTML = `
@@ -388,6 +625,56 @@
                         <div class="game-card-icon">🎨</div>
                         <h3 class="game-card-title text-teal-800">Guess the Color</h3>
                         <p class="game-card-description">Guess the secret color from a palette.</p>
+                    </div>
+                    <div onclick="showGame('wordScramble')" class="game-card bg-purple-200">
+                        <div class="game-card-icon">🔠</div>
+                        <h3 class="game-card-title text-purple-800">Word Scramble</h3>
+                        <p class="game-card-description">Unscramble the word! Choose difficulty.</p>
+                    </div>
+                    <div onclick="showGame('typingSpeedTest')" class="game-card bg-blue-200">
+                        <div class="game-card-icon">⌨️</div>
+                        <h3 class="game-card-title text-blue-800">Typing Speed Test</h3>
+                        <p class="game-card-description">Test your typing speed with different texts.</p>
+                    </div>
+                    <div onclick="showGame('quickMath')" class="game-card bg-green-200">
+                        <div class="game-card-icon">➕</div>
+                        <h3 class="game-card-title text-green-800">Quick Math</h3>
+                        <p class="game-card-description">Solve math problems! Choose operation.</p>
+                    </div>
+                    <div onclick="showGame('colorMixer')" class="game-card bg-red-200">
+                        <div class="game-card-icon">🌈</div>
+                        <h3 class="game-card-title text-red-800">Color Mixer</h3>
+                        <p class="game-card-description">Mix RGB colors or guess the color!</p>
+                    </div>
+                    <div onclick="showGame('countdownTimer')" class="game-card bg-yellow-200">
+                        <div class="game-card-icon">⏰</div>
+                        <h3 class="game-card-title text-yellow-800">Countdown Timer</h3>
+                        <p class="game-card-description">Set a timer and watch it count down.</p>
+                    </div>
+                    <div onclick="showGame('numberSorter')" class="game-card bg-indigo-200">
+                        <div class="game-card-icon">🔢</div>
+                        <h3 class="game-card-title text-indigo-800">Number Sorter</h3>
+                        <p class="game-card-description">Arrange numbers from smallest to largest.</p>
+                    </div>
+                    <div onclick="showGame('shapeGuesser')" class="game-card bg-gray-300">
+                        <div class="game-card-icon">🔺</div>
+                        <h3 class="game-card-title text-gray-800">Shape Guesser</h3>
+                        <p class="game-card-description">Guess the hidden shape! Basic or complex.</p>
+                    </div>
+                    <div onclick="showGame('palindromeChecker')" class="game-card bg-orange-200">
+                        <div class="game-card-icon">🔄</div>
+                        <h3 class="game-card-title text-orange-800">Palindrome Checker</h3>
+                        <p class="game-card-description">Check if a word or number is a palindrome.</p>
+                    </div>
+                    <div onclick="showGame('randomFactGenerator')" class="game-card bg-pink-200">
+                        <div class="game-card-icon">💡</div>
+                        <h3 class="game-card-title text-pink-800">Random Fact</h3>
+                        <p class="game-card-description">Get a random fact from various categories.</p>
+                    </div>
+                    <div onclick="showGame('unitConverter')" class="game-card bg-teal-200">
+                        <div class="game-card-icon">📏</div>
+                        <h3 class="game-card-title text-teal-800">Unit Converter</h3>
+                        <p class="game-card-description">Convert between length, weight, or temperature units.</p>
                     </div>
                 </div>
             `;
@@ -485,7 +772,6 @@
         const winningConditions = [
             [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
             [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-            [0, 4, 8], [1, 4, 7], [2, 5, 8], // Columns (corrected for clarity)
             [0, 4, 8], [2, 4, 6]             // Diagonals
         ];
 
@@ -562,7 +848,7 @@
         }
 
         // Memory Match game variables and logic
-        const memoryCards = ['🍎', '🍌', '🍇', '🍊', '🍓', '🍍', '🥝', '🥭', '🍎', '🍌', '🍇', '🍊', '🍓', '🍍', '🥝', '🥭'];
+        const memoryCards = ['🍎', '🍌', '🍇', '🍊', '🍓', '🍍', '🥝', '🥭', '🍎', '🍌', '🍇', '🍊', '�', '🍍', '🥝', '🥭'];
         let shuffledMemoryCards = [];
         let flippedCards = [];
         let matchedPairs = 0;
@@ -895,6 +1181,728 @@
             document.getElementById('colorMessage').className = "mt-6 text-xl font-medium text-gray-800";
         }
 
+        // Word Scramble game logic
+        const wordLists = {
+            easy: ['apple', 'grape', 'lemon', 'peach', 'berry', 'kiwi', 'mango', 'plum'],
+            medium: ['banana', 'orange', 'cherry', 'apricot', 'coconut', 'papaya', 'avocado'],
+            hard: ['pineapple', 'watermelon', 'strawberry', 'blueberry', 'blackberry', 'raspberry']
+        };
+        let currentWord = '';
+
+        function initializeWordScramble() {
+            const wordLength = document.getElementById('wordLength').value;
+            const words = wordLists[wordLength];
+            currentWord = words[Math.floor(Math.random() * words.length)];
+            const scrambled = currentWord.split('').sort(() => 0.5 - Math.random()).join('');
+            document.getElementById('scrambledWord').textContent = scrambled.toUpperCase();
+            document.getElementById('scrambleGuessInput').value = '';
+            document.getElementById('scrambleMessage').textContent = '';
+            document.getElementById('scrambleGuessInput').focus();
+        }
+
+        function checkWordScrambleGuess() {
+            const guess = document.getElementById('scrambleGuessInput').value.toLowerCase();
+            const messageElement = document.getElementById('scrambleMessage');
+            if (guess === currentWord) {
+                messageElement.textContent = `🎉 Correct! The word was "${currentWord.toUpperCase()}"!`;
+                messageElement.className = "mt-6 text-xl font-bold text-green-600";
+            } else {
+                messageElement.textContent = "Incorrect. Try again!";
+                messageElement.className = "mt-6 text-xl font-medium text-red-600";
+            }
+        }
+
+        // Typing Speed Test game logic
+        const typingTexts = {
+            short: [
+                "The quick brown fox jumps over the lazy dog.",
+                "Never underestimate the power of a good book.",
+                "Innovation distinguishes between a leader and a follower."
+            ],
+            long: [
+                "The early bird catches the worm, but the second mouse gets the cheese. Life is full of choices, and every decision, big or small, shapes our future. Embrace challenges as opportunities for growth and learning.",
+                "In a world brimming with possibilities, curiosity is your compass. Explore new ideas, question assumptions, and never stop seeking knowledge. The journey of discovery is endless."
+            ]
+        };
+        let typingStartTime;
+        let typingTestActive = false;
+
+        function initializeTypingSpeedTest() {
+            const textChoice = document.getElementById('typingTextChoice').value;
+            const texts = typingTexts[textChoice];
+            const selectedText = texts[Math.floor(Math.random() * texts.length)];
+            document.getElementById('typingTextDisplay').textContent = selectedText;
+            document.getElementById('typingInput').value = '';
+            document.getElementById('typingInput').disabled = false;
+            document.getElementById('typingResult').textContent = '';
+            typingTestActive = false;
+            typingStartTime = null;
+            document.getElementById('typingInput').focus();
+        }
+
+        function startTypingTest() {
+            if (!typingTestActive) {
+                typingStartTime = new Date().getTime();
+                typingTestActive = true;
+            }
+            checkTypingProgress();
+        }
+
+        function checkTypingProgress() {
+            const typedText = document.getElementById('typingInput').value;
+            const originalText = document.getElementById('typingTextDisplay').textContent;
+            const typingResultElement = document.getElementById('typingResult');
+
+            if (typedText === originalText) {
+                const endTime = new Date().getTime();
+                const timeTakenSeconds = (endTime - typingStartTime) / 1000;
+                const wordsTyped = originalText.split(' ').length;
+                const wpm = Math.round((wordsTyped / timeTakenSeconds) * 60);
+
+                typingResultElement.textContent = `🎉 You finished in ${timeTakenSeconds.toFixed(2)} seconds! Your WPM: ${wpm}`;
+                typingResultElement.className = "mt-6 text-xl font-bold text-green-600";
+                document.getElementById('typingInput').disabled = true;
+                typingTestActive = false;
+            } else {
+                // Basic error highlighting (can be improved)
+                let correctChars = 0;
+                for (let i = 0; i < typedText.length; i++) {
+                    if (typedText[i] === originalText[i]) {
+                        correctChars++;
+                    } else {
+                        break;
+                    }
+                }
+                if (typedText.length > originalText.length || typedText[typedText.length - 1] !== originalText[typedText.length - 1]) {
+                    typingResultElement.textContent = "Keep typing! Check for errors.";
+                    typingResultElement.className = "mt-6 text-xl font-medium text-orange-600";
+                } else {
+                     typingResultElement.textContent = "Keep typing...";
+                     typingResultElement.className = "mt-6 text-xl font-medium text-gray-800";
+                }
+            }
+        }
+
+        // Quick Math game logic
+        let currentMathAnswer;
+
+        function generateMathProblem() {
+            const operation = document.getElementById('mathOperation').value;
+            const num1 = Math.floor(Math.random() * 20) + 1; // Numbers up to 20
+            let num2 = Math.floor(Math.random() * 20) + 1;
+            let problemString = '';
+
+            switch (operation) {
+                case 'add':
+                    currentMathAnswer = num1 + num2;
+                    problemString = `${num1} + ${num2} = ?`;
+                    break;
+                case 'subtract':
+                    // Ensure result is not negative for simpler game
+                    if (num1 < num2) [num1, num2] = [num2, num1];
+                    currentMathAnswer = num1 - num2;
+                    problemString = `${num1} - ${num2} = ?`;
+                    break;
+                case 'multiply':
+                    num2 = Math.floor(Math.random() * 10) + 1; // Keep multiplication numbers smaller
+                    currentMathAnswer = num1 * num2;
+                    problemString = `${num1} x ${num2} = ?`;
+                    break;
+                case 'divide':
+                    // Ensure whole number division
+                    let product = num1 * num2;
+                    currentMathAnswer = num1;
+                    problemString = `${product} / ${num2} = ?`;
+                    break;
+            }
+            document.getElementById('mathProblem').textContent = problemString;
+            document.getElementById('mathAnswerInput').value = '';
+            document.getElementById('mathMessage').textContent = '';
+            document.getElementById('mathAnswerInput').focus();
+        }
+
+        function checkMathAnswer() {
+            const userAnswer = parseInt(document.getElementById('mathAnswerInput').value);
+            const messageElement = document.getElementById('mathMessage');
+
+            if (isNaN(userAnswer)) {
+                messageElement.textContent = "Please enter a number.";
+                messageElement.className = "mt-6 text-xl font-medium text-red-600";
+                return;
+            }
+
+            if (userAnswer === currentMathAnswer) {
+                messageElement.textContent = `🎉 Correct! The answer was ${currentMathAnswer}!`;
+                messageElement.className = "mt-6 text-xl font-bold text-green-600";
+            } else {
+                messageElement.textContent = `Incorrect. The answer was ${currentMathAnswer}. Try again!`;
+                messageElement.className = "mt-6 text-xl font-medium text-red-600";
+            }
+        }
+
+        // Color Mixer game logic
+        function initializeColorMixer() {
+            const mode = document.getElementById('colorMixerMode').value;
+            const contentDiv = document.getElementById('colorMixerContent');
+            contentDiv.innerHTML = ''; // Clear previous content
+
+            if (mode === 'mix') {
+                contentDiv.innerHTML = `
+                    <div class="flex flex-col items-center mb-6 w-full">
+                        <div class="flex justify-around w-full mb-4">
+                            <div class="flex flex-col items-center">
+                                <label class="text-gray-700 font-semibold mb-2">Red</label>
+                                <input type="range" min="0" max="255" value="0" id="redSlider" class="color-slider accent-red-500" oninput="updateMixedColor()">
+                                <span id="redValue" class="text-sm text-gray-600">0</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <label class="text-gray-700 font-semibold mb-2">Green</label>
+                                <input type="range" min="0" max="255" value="0" id="greenSlider" class="color-slider accent-green-500" oninput="updateMixedColor()">
+                                <span id="greenValue" class="text-sm text-gray-600">0</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <label class="text-gray-700 font-semibold mb-2">Blue</label>
+                                <input type="range" min="0" max="255" value="0" id="blueSlider" class="color-slider accent-blue-500" oninput="updateMixedColor()">
+                                <span id="blueValue" class="text-sm text-gray-600">0</span>
+                            </div>
+                        </div>
+                        <div id="mixedColorBox" class="color-box mt-4" style="background-color: rgb(0,0,0);"></div>
+                        <p class="mt-2 text-lg text-gray-700" id="rgbDisplay">RGB(0, 0, 0)</p>
+                    </div>
+                `;
+                updateMixedColor(); // Initial color update
+            } else { // guess mode
+                contentDiv.innerHTML = `
+                    <p class="text-lg text-gray-700 mb-4">Guess the RGB values for the color below!</p>
+                    <div id="targetColorBox" class="color-box mb-6"></div>
+                    <div class="flex flex-col items-center mb-6 w-full">
+                        <div class="flex justify-around w-full mb-4">
+                            <div class="flex flex-col items-center">
+                                <label class="text-gray-700 font-semibold mb-2">Red</label>
+                                <input type="range" min="0" max="255" value="0" id="guessRedSlider" class="color-slider accent-red-500" oninput="updateGuessColor()">
+                                <span id="guessRedValue" class="text-sm text-gray-600">0</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <label class="text-gray-700 font-semibold mb-2">Green</label>
+                                <input type="range" min="0" max="255" value="0" id="guessGreenSlider" class="color-slider accent-green-500" oninput="updateGuessColor()">
+                                <span id="guessGreenValue" class="text-sm text-gray-600">0</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <label class="text-gray-700 font-semibold mb-2">Blue</label>
+                                <input type="range" min="0" max="255" value="0" id="guessBlueSlider" class="color-slider accent-blue-500" oninput="updateGuessColor()">
+                                <span id="guessBlueValue" class="text-sm text-gray-600">0</span>
+                            </div>
+                        </div>
+                        <div id="guessedColorBox" class="color-box mt-4" style="background-color: rgb(0,0,0);"></div>
+                        <p class="mt-2 text-lg text-gray-700" id="guessRgbDisplay">RGB(0, 0, 0)</p>
+                    </div>
+                    <button onclick="checkColorGuessMixer()" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105">Check Guess</button>
+                    <p id="colorMixerMessage" class="mt-4 text-xl font-medium text-gray-800"></p>
+                    <button onclick="initializeColorMixer()" class="mt-4 px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300 ease-in-out">New Color</button>
+                `;
+                generateTargetColor();
+                updateGuessColor();
+            }
+        }
+
+        let targetR, targetG, targetB;
+
+        function generateTargetColor() {
+            targetR = Math.floor(Math.random() * 256);
+            targetG = Math.floor(Math.random() * 256);
+            targetB = Math.floor(Math.random() * 256);
+            document.getElementById('targetColorBox').style.backgroundColor = `rgb(${targetR},${targetG},${targetB})`;
+            document.getElementById('colorMixerMessage').textContent = '';
+        }
+
+        function updateMixedColor() {
+            const r = document.getElementById('redSlider').value;
+            const g = document.getElementById('greenSlider').value;
+            const b = document.getElementById('blueSlider').value;
+
+            document.getElementById('redValue').textContent = r;
+            document.getElementById('greenValue').textContent = g;
+            document.getElementById('blueValue').textContent = b;
+
+            const mixedColor = `rgb(${r},${g},${b})`;
+            document.getElementById('mixedColorBox').style.backgroundColor = mixedColor;
+            document.getElementById('rgbDisplay').textContent = `RGB(${r}, ${g}, ${b})`;
+        }
+
+        function updateGuessColor() {
+            const r = document.getElementById('guessRedSlider').value;
+            const g = document.getElementById('guessGreenSlider').value;
+            const b = document.getElementById('guessBlueSlider').value;
+
+            document.getElementById('guessRedValue').textContent = r;
+            document.getElementById('guessGreenValue').textContent = g;
+            document.getElementById('guessBlueValue').textContent = b;
+
+            const guessedColor = `rgb(${r},${g},${b})`;
+            document.getElementById('guessedColorBox').style.backgroundColor = guessedColor;
+            document.getElementById('guessRgbDisplay').textContent = `RGB(${r}, ${g}, ${b})`;
+        }
+
+        function checkColorGuessMixer() {
+            const guessR = parseInt(document.getElementById('guessRedSlider').value);
+            const guessG = parseInt(document.getElementById('guessGreenSlider').value);
+            const guessB = parseInt(document.getElementById('guessBlueSlider').value);
+            const messageElement = document.getElementById('colorMixerMessage');
+
+            // Simple check for exact match
+            if (guessR === targetR && guessG === targetG && guessB === targetB) {
+                messageElement.textContent = `🎉 Perfect Match! The color was RGB(${targetR},${targetG},${targetB})!`;
+                messageElement.className = "mt-4 text-xl font-bold text-green-600";
+            } else {
+                // Provide feedback on how close the guess is
+                const diffR = Math.abs(guessR - targetR);
+                const diffG = Math.abs(guessG - targetG);
+                const diffB = Math.abs(guessB - targetB);
+                const totalDiff = diffR + diffG + diffB;
+
+                if (totalDiff < 50) { // Arbitrary threshold for "close"
+                    messageElement.textContent = `Close! Try to fine-tune. Target: RGB(${targetR},${targetG},${targetB})`;
+                    messageElement.className = "mt-4 text-xl font-medium text-orange-600";
+                } else {
+                    messageElement.textContent = `Not quite. Keep trying! Target: RGB(${targetR},${targetG},${targetB})`;
+                    messageElement.className = "mt-4 text-xl font-medium text-red-600";
+                }
+            }
+        }
+
+        // Countdown Timer game logic
+        let countdownInterval;
+        let currentCountdownTime;
+
+        function initializeCountdownTimer() {
+            clearInterval(countdownInterval); // Clear any existing interval
+            document.getElementById('countdownDisplay').textContent = '';
+            document.getElementById('startButton').disabled = false;
+            document.getElementById('timerInput').disabled = false;
+            document.getElementById('resetCountdownButton').classList.add('hidden');
+            document.getElementById('countdownDisplay').className = "mt-6 text-5xl font-extrabold text-red-600"; // Reset color
+        }
+
+        function startCountdown() {
+            clearInterval(countdownInterval); // Clear any previous interval
+            currentCountdownTime = parseInt(document.getElementById('timerInput').value);
+
+            if (isNaN(currentCountdownTime) || currentCountdownTime <= 0) {
+                document.getElementById('countdownDisplay').textContent = "Please enter a valid time!";
+                document.getElementById('countdownDisplay').className = "mt-6 text-xl font-medium text-red-600";
+                return;
+            }
+
+            document.getElementById('startButton').disabled = true;
+            document.getElementById('timerInput').disabled = true;
+            document.getElementById('resetCountdownButton').classList.remove('hidden');
+            document.getElementById('countdownDisplay').className = "mt-6 text-5xl font-extrabold text-red-600"; // Ensure red for countdown
+
+            countdownInterval = setInterval(() => {
+                document.getElementById('countdownDisplay').textContent = currentCountdownTime;
+                if (currentCountdownTime <= 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('countdownDisplay').textContent = "Time's Up! 🔔";
+                    document.getElementById('countdownDisplay').className = "mt-6 text-5xl font-extrabold text-green-600"; // Green for completion
+                    document.getElementById('startButton').disabled = false; // Allow restarting
+                }
+                currentCountdownTime--;
+            }, 1000);
+        }
+
+        function resetCountdown() {
+            clearInterval(countdownInterval);
+            initializeCountdownTimer();
+            document.getElementById('countdownDisplay').textContent = '';
+        }
+
+        // Number Sorter game logic
+        let sortableNumbers = [];
+        let originalNumbers = [];
+
+        function initializeNumberSorter() {
+            const numElements = parseInt(document.getElementById('numElements').value);
+            originalNumbers = [];
+            for (let i = 0; i < numElements; i++) {
+                originalNumbers.push(Math.floor(Math.random() * 100) + 1); // Numbers 1-100
+            }
+            sortableNumbers = shuffleArray([...originalNumbers]); // Shuffle for display
+
+            renderNumberSorter();
+            document.getElementById('sorterMessage').textContent = '';
+        }
+
+        function renderNumberSorter() {
+            const container = document.getElementById('numberSorterContainer');
+            container.innerHTML = '';
+            sortableNumbers.forEach((num, index) => {
+                const item = document.createElement('div');
+                item.classList.add('number-sorter-item');
+                item.textContent = num;
+                item.draggable = true;
+                item.dataset.index = index; // Store original position for drag/drop
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragover', handleDragOver);
+                item.addEventListener('drop', handleDrop);
+                item.addEventListener('dragleave', handleDragLeave);
+                item.addEventListener('dragenter', handleDragEnter);
+                container.appendChild(item);
+            });
+        }
+
+        let draggedItem = null;
+
+        function handleDragStart(e) {
+            draggedItem = this;
+            setTimeout(() => this.style.opacity = '0.5', 0);
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', this.dataset.index); // Store index
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault(); // Necessary to allow drop
+            e.dataTransfer.dropEffect = 'move';
+            if (this !== draggedItem) {
+                this.style.backgroundColor = '#818cf8'; /* Indigo-400 */
+            }
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            if (this !== draggedItem) {
+                this.style.backgroundColor = '#818cf8'; /* Indigo-400 */
+            }
+        }
+
+        function handleDragLeave() {
+            this.style.backgroundColor = '#6366f1'; /* Indigo-500 */
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            this.style.backgroundColor = '#6366f1'; /* Indigo-500 */
+
+            if (this !== draggedItem) {
+                const draggedIndex = parseInt(draggedItem.dataset.index);
+                const droppedIndex = parseInt(this.dataset.index);
+
+                // Find the actual DOM elements
+                const currentItems = Array.from(document.querySelectorAll('.number-sorter-item'));
+                const draggedElement = currentItems.find(item => parseInt(item.dataset.index) === draggedIndex);
+                const droppedElement = currentItems.find(item => parseInt(item.dataset.index) === droppedIndex);
+
+                // Swap in the DOM
+                if (draggedElement && droppedElement) {
+                    const container = document.getElementById('numberSorterContainer');
+                    const temp = document.createElement('div'); // Placeholder
+                    container.insertBefore(temp, droppedElement);
+                    container.insertBefore(droppedElement, draggedElement);
+                    container.insertBefore(draggedElement, temp);
+                    container.removeChild(temp);
+
+                    // Update the underlying array based on new DOM order
+                    sortableNumbers = Array.from(container.children).map(item => parseInt(item.textContent));
+
+                    // Update dataset.index for correct future drag operations
+                    Array.from(container.children).forEach((item, idx) => {
+                        item.dataset.index = idx;
+                    });
+                }
+            }
+            draggedItem.style.opacity = '1';
+            draggedItem = null;
+        }
+
+
+        function checkNumberSorter() {
+            const currentOrder = Array.from(document.querySelectorAll('.number-sorter-item')).map(item => parseInt(item.textContent));
+            const sortedOrder = [...originalNumbers].sort((a, b) => a - b);
+            const messageElement = document.getElementById('sorterMessage');
+
+            if (JSON.stringify(currentOrder) === JSON.stringify(sortedOrder)) {
+                messageElement.textContent = `🎉 Correct! The numbers are sorted!`;
+                messageElement.className = "mt-6 text-xl font-bold text-green-600";
+            } else {
+                messageElement.textContent = "Not quite sorted. Keep arranging!";
+                messageElement.className = "mt-6 text-xl font-medium text-red-600";
+            }
+        }
+
+
+        // Shape Guesser game logic
+        const basicShapes = ['Circle', 'Square', 'Triangle', 'Rectangle', 'Pentagon', 'Hexagon'];
+        const complexPolygons = ['Heptagon', 'Octagon', 'Nonagon', 'Decagon', 'Star']; // Star is a simplified representation
+        let currentShapeName;
+
+        function initializeShapeGuesser() {
+            const difficulty = document.getElementById('shapeDifficulty').value;
+            const shapes = difficulty === 'basic' ? basicShapes : complexPolygons;
+            currentShapeName = shapes[Math.floor(Math.random() * shapes.length)];
+
+            drawShape(currentShapeName);
+            document.getElementById('shapeGuessInput').value = '';
+            document.getElementById('shapeMessage').textContent = '';
+            document.getElementById('shapeGuessInput').focus();
+        }
+
+        function drawShape(shapeName) {
+            const shapeDisplay = document.getElementById('shapeDisplay');
+            shapeDisplay.innerHTML = ''; // Clear previous shape
+
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.setAttribute("width", "180");
+            svg.setAttribute("height", "180");
+            svg.setAttribute("viewBox", "0 0 180 180"); // Adjust viewBox for padding/centering
+
+            let shapeElement;
+            const fillColor = '#60a5fa'; // Blue-400
+            const strokeColor = '#3b82f6'; // Blue-500
+            const strokeWidth = 5;
+
+            switch (shapeName) {
+                case 'Circle':
+                    shapeElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    shapeElement.setAttribute("cx", "90");
+                    shapeElement.setAttribute("cy", "90");
+                    shapeElement.setAttribute("r", "70");
+                    break;
+                case 'Square':
+                    shapeElement = document.createElementNS("http://www.w3.org="http://www.w3.org/2000/svg", "rect");
+                    shapeElement.setAttribute("x", "20");
+                    shapeElement.setAttribute("y", "20");
+                    shapeElement.setAttribute("width", "140");
+                    shapeElement.setAttribute("height", "140");
+                    break;
+                case 'Triangle':
+                    shapeElement = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    shapeElement.setAttribute("points", "90,20 160,160 20,160");
+                    break;
+                case 'Rectangle':
+                    shapeElement = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    shapeElement.setAttribute("x", "20");
+                    shapeElement.setAttribute("y", "40");
+                    shapeElement.setAttribute("width", "140");
+                    shapeElement.setAttribute("height", "100");
+                    break;
+                case 'Pentagon':
+                    shapeElement = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    shapeElement.setAttribute("points", "90,15 170,60 140,160 40,160 10,60");
+                    break;
+                case 'Hexagon':
+                    shapeElement = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    shapeElement.setAttribute("points", "90,10 170,55 170,125 90,170 10,125 10,55");
+                    break;
+                case 'Heptagon':
+                    shapeElement = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    // Points for a regular heptagon centered at (90,90) with radius 70
+                    const heptagonPoints = [];
+                    for (let i = 0; i < 7; i++) {
+                        const angle = (Math.PI / 2) + (2 * Math.PI * i / 7); // Start at top
+                        const x = 90 + 70 * Math.cos(angle);
+                        const y = 90 + 70 * Math.sin(angle);
+                        heptagonPoints.push(`${x},${y}`);
+                    }
+                    shapeElement.setAttribute("points", heptagonPoints.join(' '));
+                    break;
+                case 'Octagon':
+                    shapeElement = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    shapeElement.setAttribute("points", "70,10 110,10 170,70 170,110 110,170 70,170 10,110 10,70");
+                    break;
+                case 'Nonagon':
+                    shapeElement = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    // Points for a regular nonagon centered at (90,90) with radius 70
+                    const nonagonPoints = [];
+                    for (let i = 0; i < 9; i++) {
+                        const angle = (Math.PI / 2) + (2 * Math.PI * i / 9); // Start at top
+                        const x = 90 + 70 * Math.cos(angle);
+                        const y = 90 + 70 * Math.sin(angle);
+                        nonagonPoints.push(`${x},${y}`);
+                    }
+                    shapeElement.setAttribute("points", nonagonPoints.join(' '));
+                    break;
+                case 'Decagon':
+                    shapeElement = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    // Points for a regular decagon centered at (90,90) with radius 70
+                    const decagonPoints = [];
+                    for (let i = 0; i < 10; i++) {
+                        const angle = (Math.PI / 2) + (2 * Math.PI * i / 10); // Start at top
+                        const x = 90 + 70 * Math.cos(angle);
+                        const y = 90 + 70 * Math.sin(angle);
+                        decagonPoints.push(`${x},${y}`);
+                    }
+                    shapeElement.setAttribute("points", decagonPoints.join(' '));
+                    break;
+                case 'Star':
+                    shapeElement = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    // A simple 5-pointed star
+                    shapeElement.setAttribute("points", "90,10 110,60 170,60 120,100 140,160 90,130 40,160 60,100 10,60 70,60");
+                    break;
+                default:
+                    return; // Should not happen
+            }
+            shapeElement.setAttribute("fill", fillColor);
+            shapeElement.setAttribute("stroke", strokeColor);
+            shapeElement.setAttribute("stroke-width", strokeWidth);
+            svg.appendChild(shapeElement);
+            shapeDisplay.appendChild(svg);
+        }
+
+        function checkShapeGuess() {
+            const guess = document.getElementById('shapeGuessInput').value.trim().toLowerCase();
+            const messageElement = document.getElementById('shapeMessage');
+
+            if (guess === currentShapeName.toLowerCase()) {
+                messageElement.textContent = `🎉 Correct! It was a ${currentShapeName}!`;
+                messageElement.className = "mt-6 text-xl font-bold text-green-600";
+            } else {
+                messageElement.textContent = `Incorrect. Try again! It was not a ${guess}.`;
+                messageElement.className = "mt-6 text-xl font-medium text-red-600";
+            }
+        }
+
+        // Palindrome Checker game logic
+        function checkPalindrome() {
+            const input = document.getElementById('palindromeInput').value.trim();
+            const type = document.getElementById('palindromeType').value;
+            const resultElement = document.getElementById('palindromeResult');
+
+            if (!input) {
+                resultElement.textContent = "Please enter something to check.";
+                resultElement.className = "mt-6 text-xl font-medium text-red-600";
+                return;
+            }
+
+            let cleanedInput;
+            if (type === 'word') {
+                cleanedInput = input.toLowerCase().replace(/[^a-z0-9]/g, ''); // Remove non-alphanumeric
+            } else { // number
+                cleanedInput = input.replace(/[^0-9]/g, ''); // Remove non-numeric
+            }
+
+            const reversedInput = cleanedInput.split('').reverse().join('');
+
+            if (cleanedInput === reversedInput && cleanedInput !== '') {
+                resultElement.textContent = `"${input}" is a palindrome! ✨`;
+                resultElement.className = "mt-6 text-xl font-bold text-green-600";
+            } else {
+                resultElement.textContent = `"${input}" is NOT a palindrome. 🙁`;
+                resultElement.className = "mt-6 text-xl font-medium text-red-600";
+            }
+        }
+
+        // Random Fact Generator game logic
+        const facts = {
+            animals: [
+                "A group of owls is called a parliament.",
+                "Butterflies taste with their feet.",
+                "A snail can sleep for three years.",
+                "Octopuses have three hearts."
+            ],
+            history: [
+                "The shortest war in history lasted only 38 to 45 minutes.",
+                "The Great Wall of China is not visible from space with the naked eye.",
+                "Cleopatra was not Egyptian; she was Greek."
+            ],
+            science: [
+                "A bolt of lightning is five times hotter than the sun.",
+                "Honey never spoils.",
+                "There are more stars in the universe than grains of sand on all the beaches on Earth."
+            ],
+            random: [
+                "The average person walks the equivalent of three times around the world in a lifetime.",
+                "It is impossible for most people to lick their own elbow.",
+                "A 'jiffy' is an actual unit of time: 1/100th of a second."
+            ]
+        };
+
+        function generateFact() {
+            const category = document.getElementById('factCategory').value;
+            let factList;
+            if (category === 'random') {
+                const allFacts = [].concat(...Object.values(facts));
+                factList = allFacts;
+            } else {
+                factList = facts[category];
+            }
+            const randomFact = factList[Math.floor(Math.random() * factList.length)];
+            document.getElementById('factDisplay').textContent = randomFact;
+        }
+
+        // Unit Converter game logic
+        const conversions = {
+            length: {
+                'meters': { to: { 'feet': 3.28084, 'inches': 39.3701 }, from: { 'feet': 0.3048, 'inches': 0.0254 } },
+                'feet': { to: { 'meters': 0.3048, 'inches': 12 }, from: { 'meters': 3.28084, 'inches': 0.0833333 } },
+                'inches': { to: { 'meters': 0.0254, 'feet': 0.0833333 }, from: { 'meters': 39.3701, 'feet': 12 } }
+            },
+            weight: {
+                'kilograms': { to: { 'pounds': 2.20462, 'ounces': 35.274 }, from: { 'pounds': 0.453592, 'ounces': 0.0283495 } },
+                'pounds': { to: { 'kilograms': 0.453592, 'ounces': 16 }, from: { 'kilograms': 2.20462, 'ounces': 0.0625 } },
+                'ounces': { to: { 'kilograms': 0.0283495, 'pounds': 0.0625 }, from: { 'kilograms': 35.274, 'pounds': 16 } }
+            },
+            temperature: {
+                'celsius': { to: { 'fahrenheit': (c) => (c * 9/5) + 32, 'kelvin': (c) => c + 273.15 }, from: { 'fahrenheit': (f) => (f - 32) * 5/9, 'kelvin': (k) => k - 273.15 } },
+                'fahrenheit': { to: { 'celsius': (f) => (f - 32) * 5/9, 'kelvin': (f) => ((f - 32) * 5/9) + 273.15 }, from: { 'celsius': (c) => (c * 9/5) + 32, 'kelvin': (k) => ((k - 273.15) * 9/5) + 32 } },
+                'kelvin': { to: { 'celsius': (k) => k - 273.15, 'fahrenheit': (k) => ((k - 273.15) * 9/5) + 32 }, from: { 'celsius': (c) => c + 273.15, 'fahrenheit': (f) => ((f - 32) * 5/9) + 273.15 } }
+            }
+        };
+
+        function setupUnitConverter() {
+            const type = document.getElementById('conversionType').value;
+            const inputUnitSelect = document.getElementById('inputUnit');
+            const outputUnitSelect = document.getElementById('outputUnit');
+            inputUnitSelect.innerHTML = '';
+            outputUnitSelect.innerHTML = '';
+
+            const units = Object.keys(conversions[type]);
+            units.forEach(unit => {
+                const option1 = document.createElement('option');
+                option1.value = unit;
+                option1.textContent = unit.charAt(0).toUpperCase() + unit.slice(1);
+                inputUnitSelect.appendChild(option1);
+
+                const option2 = document.createElement('option');
+                option2.value = unit;
+                option2.textContent = unit.charAt(0).toUpperCase() + unit.slice(1);
+                outputUnitSelect.appendChild(option2);
+            });
+            document.getElementById('conversionResult').textContent = '';
+            document.getElementById('inputValue').value = '';
+        }
+
+        function convertUnit() {
+            const type = document.getElementById('conversionType').value;
+            const inputValue = parseFloat(document.getElementById('inputValue').value);
+            const inputUnit = document.getElementById('inputUnit').value;
+            const outputUnit = document.getElementById('outputUnit').value;
+            const resultElement = document.getElementById('conversionResult');
+
+            if (isNaN(inputValue)) {
+                resultElement.textContent = "Please enter a valid number.";
+                resultElement.className = "mt-6 text-xl font-medium text-red-600";
+                return;
+            }
+
+            if (inputUnit === outputUnit) {
+                resultElement.textContent = `${inputValue} ${inputUnit} is ${inputValue} ${outputUnit}.`;
+                resultElement.className = "mt-6 text-xl font-medium text-gray-800";
+                return;
+            }
+
+            let convertedValue;
+            if (type === 'temperature') {
+                const convertFunc = conversions[type][inputUnit].to[outputUnit];
+                convertedValue = convertFunc(inputValue);
+            } else {
+                // Convert input to base unit (e.g., meters, kilograms) then to output unit
+                const baseValue = inputValue * conversions[type][inputUnit].from[Object.keys(conversions[type][inputUnit].from)[0]]; // Convert to first unit in 'from' list as base
+                convertedValue = baseValue * conversions[type][Object.keys(conversions[type][inputUnit].from)[0]].to[outputUnit];
+            }
+
+            resultElement.textContent = `${inputValue} ${inputUnit} is ${convertedValue.toFixed(4)} ${outputUnit}.`;
+            resultElement.className = "mt-6 text-xl font-bold text-green-600";
+        }
+
         // Show the game selection on initial load
         document.addEventListener('DOMContentLoaded', () => {
             showGameSelection();
@@ -902,3 +1910,4 @@
     </script>
 </body>
 </html>
+�
