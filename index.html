@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Games Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+        }
+        .game-container {
+            min-height: 400px; /* Ensure a minimum height for game content */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        /* Tic-Tac-Toe specific styles */
+        .tic-tac-toe-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 8px;
+            background-color: #cbd5e1; /* Slate-300 */
+            border-radius: 8px;
+            padding: 8px;
+        }
+        .tic-tac-toe-cell {
+            width: 100px;
+            height: 100px;
+            background-color: #e2e8f0; /* Slate-200 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background-color 0.2s ease-in-out;
+            color: #334155; /* Slate-700 */
+        }
+        .tic-tac-toe-cell:hover {
+            background-color: #d1d5db; /* Gray-300 */
+        }
+        .tic-tac-toe-cell.x {
+            color: #ef4444; /* Red-500 */
+        }
+        .tic-tac-toe-cell.o {
+            color: #22c55e; /* Green-500 */
+        }
+
+        /* Memory Match specific styles */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 80px); /* 4 columns for 16 cards */
+            grid-template-rows: repeat(4, 80px);
+            gap: 10px;
+            perspective: 1000px; /* For 3D flip effect */
+        }
+        .memory-card {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .memory-card.flipped {
+            transform: rotateY(180deg);
+        }
+        .memory-card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            border-radius: 8px;
+        }
+        .memory-card-front {
+            background-color: #60a5fa; /* Blue-400 */
+            color: white;
+            transform: rotateY(180deg);
+        }
+        .memory-card-back {
+            background-color: #a78bfa; /* Purple-400 */
+            color: white;
+        }
+        .memory-card.matched .memory-card-front,
+        .memory-card.matched .memory-card-back {
+            background-color: #34d399; /* Green-400 for matched */
+            color: white;
+        }
+
+        /* Game Card specific styles for the home screen */
+        .game-card {
+            background-color: #ffffff;
+            border-radius: 1rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1.5rem; /* p-6 */
+            cursor: pointer;
+            transform: scale(1);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .game-card:hover {
+            transform: scale(1.05); /* hover:scale-105 */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* hover:shadow-xl */
+        }
+        .game-card-icon {
+            font-size: 4rem; /* text-6xl */
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        .game-card-title {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: bold;
+            color: #1f2937; /* Gray-800 */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        .game-card-description {
+            color: #4b5563; /* Gray-600 */
+        }
+
+        /* Dice animation */
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        .animate-bounce {
+            animation: bounce 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <header class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 shadow-lg rounded-b-xl">
+        <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center">
+            <h1 class="text-3xl font-bold mb-2 sm:mb-0">🎮 Mini Games Hub</h1>
+            <nav>
+                <ul class="flex space-x-4">
+                    <li><button onclick="showGameSelection()" class="px-4 py-2 bg-white text-blue-600 rounded-lg shadow-md hover:bg-gray-100 transition duration-300 ease-in-out font-semibold">Home</button></li>
+                    <li><button onclick="showGame('comingSoon')" class="px-4 py-2 bg-white text-gray-500 rounded-lg shadow-md cursor-not-allowed font-semibold opacity-75">Coming Soon!</button></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto p-4 flex items-center justify-center">
+        <div id="gameContent" class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl game-container">
+            <!-- Game content or game selection will be loaded here -->
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white p-4 text-center rounded-t-xl mt-auto">
+        <p>&copy; 2025 Mini Games Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Function to show different games or the game selection screen
+        function showGame(gameId) {
+            const gameContentDiv = document.getElementById('gameContent');
+            gameContentDiv.innerHTML = ''; // Clear previous content
+
+            // Ensure the game-container's justify-content is set correctly
+            gameContentDiv.classList.remove('justify-center', 'items-center');
+            gameContentDiv.classList.add('flex-col'); // Always flex-col for game content
+
+            switch (gameId) {
+                case 'guessTheNumber':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">🔢 Guess the Number!</h2>
+                        <p class="text-lg text-gray-700 mb-4">I'm thinking of a number between 1 and 100. Can you guess it?</p>
+                        <input type="number" id="guessInput" class="p-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full max-w-xs text-center text-xl" placeholder="Enter your guess">
+                        <button onclick="checkGuess()" class="mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105">Submit Guess</button>
+                        <p id="message" class="mt-6 text-xl font-medium text-gray-800"></p>
+                        <button onclick="resetGame()" id="resetButton" class="mt-4 px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300 ease-in-out hidden">Play Again</button>
+                    `;
+                    // Initialize game variables
+                    window.randomNumber = Math.floor(Math.random() * 100) + 1;
+                    window.attempts = 0;
+                    break;
+                case 'rockPaperScissors':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">✊✋✌️ Rock Paper Scissors!</h2>
+                        <p class="text-lg text-gray-700 mb-4">Choose your move:</p>
+                        <div class="flex space-x-4 mb-6">
+                            <button onclick="playRPS('rock')" class="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105 text-2xl">✊ Rock</button>
+                            <button onclick="playRPS('paper')" class="px-6 py-3 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105 text-2xl">✋ Paper</button>
+                            <button onclick="playRPS('scissors')" class="px-6 py-3 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105 text-2xl">✌️ Scissors</button>
+                        </div>
+                        <p id="rpsResult" class="mt-4 text-xl font-medium text-gray-800"></p>
+                        <p id="rpsScore" class="mt-2 text-lg text-gray-600">Score: Player ${window.playerScore || 0} - Computer ${window.computerScore || 0}</p>
+                        <button onclick="resetRPS()" id="rpsResetButton" class="mt-4 px-4 py-2 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 transition duration-300 ease-in-out hidden">Play Again</button>
+                    `;
+                    // Initialize RPS game variables (or ensure they are initialized if not already)
+                    window.playerScore = window.playerScore || 0;
+                    window.computerScore = window.computerScore || 0;
+                    break;
+                case 'ticTacToe':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">❌⭕ Tic-Tac-Toe!</h2>
+                        <p id="ticTacToeStatus" class="text-xl font-medium text-gray-800 mb-4">Player X's turn</p>
+                        <div id="ticTacToeGrid" class="tic-tac-toe-grid">
+                            <div class="tic-tac-toe-cell" onclick="handleCellClick(0)"></div>
+                            <div class="tic-tac-toe-cell" onclick="handleCellClick(1)"></div>
+                            <div class="tic-tac-toe-cell" onclick="handleCellClick(2)"></div>
+                            <div class="tic-tac-toe-cell" onclick="handleCellClick(3)"></div>
+                            <div class="tic-tac-toe-cell" onclick="handleCellClick(4)"></div>
+                            <div class="tic-tac-toe-cell" onclick="handleCellClick(5)"></div>
+                            <div class="tic-tac-toe-cell" onclick="handleCellClick(6)"></div>
+                            <div class="tic-tac-toe-cell" onclick="handleCellClick(7)"></div>
+                            <div class="tic-tac-toe-cell" onclick="handleCellClick(8)"></div>
+                        </div>
+                        <button onclick="resetTicTacToe()" class="mt-6 px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 transition duration-300 ease-in-out">Reset Game</button>
+                    `;
+                    initializeTicTacToe(); // Initialize the Tic-Tac-Toe game
+                    break;
+                case 'memoryMatch':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">🧠 Memory Match!</h2>
+                        <p id="memoryStatus" class="text-xl font-medium text-gray-800 mb-4">Moves: 0</p>
+                        <div id="memoryGrid" class="memory-grid">
+                            <!-- Cards will be generated here by JavaScript -->
+                        </div>
+                        <button onclick="resetMemoryMatch()" class="mt-6 px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 transition duration-300 ease-in-out">Reset Game</button>
+                    `;
+                    initializeMemoryMatch(); // Initialize the Memory Match game
+                    break;
+                case 'diceRoll':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">🎲 Dice Roll!</h2>
+                        <p class="text-lg text-gray-700 mb-4">Click the button to roll the dice!</p>
+                        <button onclick="rollDice()" class="mt-4 px-8 py-4 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition duration-300 ease-in-out transform hover:scale-105 text-3xl">Roll Dice</button>
+                        <p id="diceResult" class="mt-6 text-5xl font-extrabold text-blue-700"></p>
+                    `;
+                    break;
+                case 'coinFlip':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">🪙 Coin Flip!</h2>
+                        <p class="text-lg text-gray-700 mb-4">Call it in the air: Heads or Tails?</p>
+                        <div class="flex space-x-4 mb-6">
+                            <button onclick="flipCoin('Heads')" class="px-6 py-3 bg-gray-700 text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 transition duration-300 ease-in-out transform hover:scale-105 text-2xl">Heads</button>
+                            <button onclick="flipCoin('Tails')" class="px-6 py-3 bg-gray-700 text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 transition duration-300 ease-in-out transform hover:scale-105 text-2xl">Tails</button>
+                        </div>
+                        <p id="coinResult" class="mt-4 text-xl font-medium text-gray-800"></p>
+                        <p id="coinMessage" class="mt-2 text-lg text-gray-600"></p>
+                    `;
+                    break;
+                case 'higherLower':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">🃏 Higher or Lower?</h2>
+                        <p class="text-lg text-gray-700 mb-4">Current Card: <span id="currentCard" class="font-bold text-2xl text-blue-600"></span></p>
+                        <div class="flex space-x-4 mb-6">
+                            <button onclick="makeHigherLowerGuess('higher')" class="px-6 py-3 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105 text-2xl">Higher</button>
+                            <button onclick="makeHigherLowerGuess('lower')" class="px-6 py-3 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105 text-2xl">Lower</button>
+                        </div>
+                        <p id="higherLowerResult" class="mt-4 text-xl font-medium text-gray-800"></p>
+                        <p id="higherLowerStreak" class="mt-2 text-lg text-gray-600">Streak: 0</p>
+                        <button onclick="resetHigherLower()" class="mt-4 px-4 py-2 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 transition duration-300 ease-in-out hidden">Play Again</button>
+                    `;
+                    initializeHigherLower();
+                    break;
+                case 'timedClicker':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">⏱️ Timed Clicker!</h2>
+                        <p class="text-lg text-gray-700 mb-4">Click the button as many times as you can in 10 seconds!</p>
+                        <p id="clickerTimer" class="text-2xl font-bold text-red-600 mb-4">Time: 10s</p>
+                        <p id="clickerCount" class="text-4xl font-extrabold text-blue-700 mb-6">Clicks: 0</p>
+                        <button onclick="startClickerGame()" id="clickerButton" class="px-8 py-4 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-600 transition duration-300 ease-in-out transform hover:scale-105 text-3xl">Start Clicking!</button>
+                        <button onclick="resetClickerGame()" id="clickerResetButton" class="mt-4 px-4 py-2 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 transition duration-300 ease-in-out hidden">Play Again</button>
+                    `;
+                    initializeTimedClicker();
+                    break;
+                case 'rpsls':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">🖖 Rock Paper Scissors Lizard Spock!</h2>
+                        <p class="text-lg text-gray-700 mb-4">Choose your move:</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+                            <button onclick="playRPSLS('rock')" class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105 text-xl">✊ Rock</button>
+                            <button onclick="playRPSLS('paper')" class="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105 text-xl">✋ Paper</button>
+                            <button onclick="playRPSLS('scissors')" class="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105 text-xl">✌️ Scissors</button>
+                            <button onclick="playRPSLS('lizard')" class="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition duration-300 ease-in-out transform hover:scale-105 text-xl">🦎 Lizard</button>
+                            <button onclick="playRPSLS('spock')" class="px-4 py-2 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 transition duration-300 ease-in-out transform hover:scale-105 text-xl">🖖 Spock</button>
+                        </div>
+                        <p id="rpslsResult" class="mt-4 text-xl font-medium text-gray-800"></p>
+                        <p id="rpslsScore" class="mt-2 text-lg text-gray-600">Score: Player 0 - Computer 0</p>
+                        <button onclick="resetRPSLS()" class="mt-4 px-4 py-2 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-600 transition duration-300 ease-in-out hidden">Play Again</button>
+                    `;
+                    window.rpslsPlayerScore = 0;
+                    window.rpslsComputerScore = 0;
+                    break;
+                case 'guessTheColor':
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">🎨 Guess the Color!</h2>
+                        <p class="text-lg text-gray-700 mb-4">I'm thinking of a color. Can you guess it?</p>
+                        <div id="colorOptions" class="grid grid-cols-3 gap-4 mb-6 w-full max-w-sm">
+                            <!-- Color buttons will be generated here -->
+                        </div>
+                        <p id="colorMessage" class="mt-6 text-xl font-medium text-gray-800"></p>
+                        <button onclick="resetGuessTheColor()" id="colorResetButton" class="mt-4 px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300 ease-in-out hidden">Play Again</button>
+                    `;
+                    initializeGuessTheColor();
+                    break;
+                case 'comingSoon':
+                    gameContentDiv.classList.add('justify-center', 'items-center'); // Center content for coming soon
+                    gameContentDiv.innerHTML = `
+                        <h2 class="text-4xl font-extrabold text-gray-800 mb-6">🚀 More Games Coming Soon!</h2>
+                        <p class="text-xl text-gray-600 text-center">We're working hard to bring you exciting new mini-games.</p>
+                        <div class="mt-8">
+                            <img src="https://placehold.co/300x200/e0e7ff/4f46e5?text=Stay+Tuned!" alt="Placeholder for coming soon" class="rounded-lg shadow-md">
+                        </div>
+                    `;
+                    break;
+                default: // Default case for initial load or unknown gameId
+                    showGameSelection();
+                    break;
+            }
+        }
+
+        // Function to display the game selection grid
+        function showGameSelection() {
+            const gameContentDiv = document.getElementById('gameContent');
+            gameContentDiv.innerHTML = `
+                <h2 class="text-4xl font-extrabold text-gray-800 mb-8 text-center">Choose Your Game!</h2>
+                <div id="gameSelectionGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">
+                    <div onclick="showGame('guessTheNumber')" class="game-card bg-blue-100">
+                        <div class="game-card-icon">🔢</div>
+                        <h3 class="game-card-title text-blue-800">Guess the Number</h3>
+                        <p class="game-card-description">Guess the secret number between 1 and 100.</p>
+                    </div>
+                    <div onclick="showGame('rockPaperScissors')" class="game-card bg-green-100">
+                        <div class="game-card-icon">✊✋✌️</div>
+                        <h3 class="game-card-title text-green-800">Rock Paper Scissors</h3>
+                        <p class="game-card-description">Play the classic hand game against the computer.</p>
+                    </div>
+                    <div onclick="showGame('ticTacToe')" class="game-card bg-red-100">
+                        <div class="game-card-icon">❌⭕</div>
+                        <h3 class="game-card-title text-red-800">Tic-Tac-Toe</h3>
+                        <p class="game-card-description">Challenge a friend to a game of X's and O's.</p>
+                    </div>
+                    <div onclick="showGame('memoryMatch')" class="game-card bg-purple-100">
+                        <div class="game-card-icon">🧠</div>
+                        <h3 class="game-card-title text-purple-800">Memory Match</h3>
+                        <p class="game-card-description">Test your memory by finding matching pairs.</p>
+                    </div>
+                    <div onclick="showGame('diceRoll')" class="game-card bg-yellow-100">
+                        <div class="game-card-icon">🎲</div>
+                        <h3 class="game-card-title text-yellow-800">Dice Roll</h3>
+                        <p class="game-card-description">Roll a virtual six-sided dice.</p>
+                    </div>
+                    <div onclick="showGame('coinFlip')" class="game-card bg-gray-200">
+                        <div class="game-card-icon">🪙</div>
+                        <h3 class="game-card-title text-gray-800">Coin Flip</h3>
+                        <p class="game-card-description">Call heads or tails and flip a coin.</p>
+                    </div>
+                    <div onclick="showGame('higherLower')" class="game-card bg-orange-100">
+                        <div class="game-card-icon">🃏</div>
+                        <h3 class="game-card-title text-orange-800">Higher or Lower</h3>
+                        <p class="game-card-description">Guess if the next card will be higher or lower.</p>
+                    </div>
+                    <div onclick="showGame('timedClicker')" class="game-card bg-indigo-100">
+                        <div class="game-card-icon">⏱️</div>
+                        <h3 class="game-card-title text-indigo-800">Timed Clicker</h3>
+                        <p class="game-card-description">Click as fast as you can in 10 seconds!</p>
+                    </div>
+                    <div onclick="showGame('rpsls')" class="game-card bg-pink-100">
+                        <div class="game-card-icon">🖖</div>
+                        <h3 class="game-card-title text-pink-800">RPSLS</h3>
+                        <p class="game-card-description">Rock, Paper, Scissors, Lizard, Spock!</p>
+                    </div>
+                     <div onclick="showGame('guessTheColor')" class="game-card bg-teal-100">
+                        <div class="game-card-icon">🎨</div>
+                        <h3 class="game-card-title text-teal-800">Guess the Color</h3>
+                        <p class="game-card-description">Guess the secret color from a palette.</p>
+                    </div>
+                </div>
+            `;
+            // Ensure the game-container is centered for the selection grid
+            gameContentDiv.classList.add('justify-center', 'items-center');
+        }
+
+        // Guess the Number game logic
+        function checkGuess() {
+            const guessInput = document.getElementById('guessInput');
+            const message = document.getElementById('message');
+            const resetButton = document.getElementById('resetButton');
+            const guess = parseInt(guessInput.value);
+
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                message.textContent = "Please enter a valid number between 1 and 100.";
+                message.className = "mt-6 text-xl font-medium text-red-600";
+                return;
+            }
+
+            window.attempts++;
+
+            if (guess === window.randomNumber) {
+                message.textContent = `🎉 Congratulations! You guessed the number ${window.randomNumber} in ${window.attempts} attempts!`;
+                message.className = "mt-6 text-xl font-bold text-green-600";
+                guessInput.disabled = true;
+                resetButton.classList.remove('hidden');
+            } else if (guess < window.randomNumber) {
+                message.textContent = "Too low! Try again.";
+                message.className = "mt-6 text-xl font-medium text-orange-600";
+            } else {
+                message.textContent = "Too high! Try again.";
+                message.className = "mt-6 text-xl font-medium text-orange-600";
+            }
+            guessInput.value = ''; // Clear input after guess
+            guessInput.focus(); // Keep focus on input
+        }
+
+        function resetGame() {
+            const guessInput = document.getElementById('guessInput');
+            const message = document.getElementById('message');
+            const resetButton = document.getElementById('resetButton');
+
+            window.randomNumber = Math.floor(Math.random() * 100) + 1;
+            window.attempts = 0;
+            guessInput.value = '';
+            guessInput.disabled = false;
+            message.textContent = '';
+            resetButton.classList.add('hidden');
+            guessInput.focus();
+        }
+
+        // Rock Paper Scissors game logic
+        function playRPS(playerChoice) {
+            const choices = ['rock', 'paper', 'scissors'];
+            const computerChoice = choices[Math.floor(Math.random() * choices.length)];
+            let result = '';
+
+            if (playerChoice === computerChoice) {
+                result = "It's a tie!";
+            } else if (
+                (playerChoice === 'rock' && computerChoice === 'scissors') ||
+                (playerChoice === 'paper' && computerChoice === 'rock') ||
+                (playerChoice === 'scissors' && computerChoice === 'paper')
+            ) {
+                result = "You win!";
+                window.playerScore++;
+            } else {
+                result = "You lose!";
+                window.computerScore++;
+            }
+
+            const rpsResult = document.getElementById('rpsResult');
+            const rpsScore = document.getElementById('rpsScore');
+            rpsResult.textContent = `You chose ${playerChoice}, Computer chose ${computerChoice}. ${result}`;
+            rpsResult.className = `mt-4 text-xl font-bold ${result.includes('win') ? 'text-green-600' : result.includes('lose') ? 'text-red-600' : 'text-blue-600'}`;
+            rpsScore.textContent = `Score: Player ${window.playerScore} - Computer ${window.computerScore}`;
+
+            // Show reset button if a game has been played
+            document.getElementById('rpsResetButton').classList.remove('hidden');
+        }
+
+        function resetRPS() {
+            window.playerScore = 0;
+            window.computerScore = 0;
+            document.getElementById('rpsResult').textContent = '';
+            document.getElementById('rpsScore').textContent = 'Score: Player 0 - Computer 0';
+            document.getElementById('rpsResetButton').classList.add('hidden');
+        }
+
+        // Tic-Tac-Toe game variables and logic
+        let ticTacToeBoard = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let gameActive = true;
+        const winningConditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [1, 4, 7], [2, 5, 8], // Columns (corrected for clarity)
+            [0, 4, 8], [2, 4, 6]             // Diagonals
+        ];
+
+        function initializeTicTacToe() {
+            ticTacToeBoard = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            gameActive = true;
+            document.getElementById('ticTacToeStatus').textContent = `Player ${currentPlayer}'s turn`;
+            const cells = document.querySelectorAll('.tic-tac-toe-cell');
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('x', 'o');
+            });
+        }
+
+        function handleCellClick(clickedCellIndex) {
+            const clickedCell = document.querySelectorAll('.tic-tac-toe-cell')[clickedCellIndex];
+
+            // If the cell is already filled or game is not active, do nothing
+            if (ticTacToeBoard[clickedCellIndex] !== '' || !gameActive) {
+                return;
+            }
+
+            // Update the board and display
+            ticTacToeBoard[clickedCellIndex] = currentPlayer;
+            clickedCell.textContent = currentPlayer;
+            clickedCell.classList.add(currentPlayer.toLowerCase()); // Add 'x' or 'o' class for styling
+
+            checkWinner();
+        }
+
+        function checkWinner() {
+            let roundWon = false;
+            for (let i = 0; i < winningConditions.length; i++) {
+                const winCondition = winningConditions[i];
+                let a = ticTacToeBoard[winCondition[0]];
+                let b = ticTacToeBoard[winCondition[1]];
+                let c = ticTacToeBoard[winCondition[2]];
+
+                if (a === '' || b === '' || c === '') {
+                    continue;
+                }
+                if (a === b && b === c) {
+                    roundWon = true;
+                    break;
+                }
+            }
+
+            const statusDisplay = document.getElementById('ticTacToeStatus');
+            if (roundWon) {
+                statusDisplay.textContent = `🎉 Player ${currentPlayer} has won!`;
+                statusDisplay.className = "text-xl font-bold text-green-600 mb-4";
+                gameActive = false;
+                return;
+            }
+
+            // Check for a draw
+            let roundDraw = !ticTacToeBoard.includes('');
+            if (roundDraw) {
+                statusDisplay.textContent = `It's a draw!`;
+                statusDisplay.className = "text-xl font-bold text-blue-600 mb-4";
+                gameActive = false;
+                return;
+            }
+
+            // Continue game if no win or draw
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            statusDisplay.textContent = `Player ${currentPlayer}'s turn`;
+            statusDisplay.className = "text-xl font-medium text-gray-800 mb-4";
+        }
+
+        function resetTicTacToe() {
+            initializeTicTacToe();
+        }
+
+        // Memory Match game variables and logic
+        const memoryCards = ['🍎', '🍌', '🍇', '🍊', '🍓', '🍍', '🥝', '🥭', '🍎', '🍌', '🍇', '🍊', '🍓', '🍍', '🥝', '🥭'];
+        let shuffledMemoryCards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let memoryMoves = 0;
+        let waitingForSecondCard = false;
+
+        function initializeMemoryMatch() {
+            shuffledMemoryCards = shuffleArray([...memoryCards]); // Duplicate and shuffle
+            flippedCards = [];
+            matchedPairs = 0;
+            memoryMoves = 0;
+            waitingForSecondCard = false;
+
+            const memoryGrid = document.getElementById('memoryGrid');
+            memoryGrid.innerHTML = ''; // Clear existing cards
+            document.getElementById('memoryStatus').textContent = `Moves: ${memoryMoves}`;
+
+            shuffledMemoryCards.forEach((emoji, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.emoji = emoji;
+                cardElement.dataset.index = index;
+                cardElement.onclick = () => flipCard(cardElement, emoji, index);
+
+                cardElement.innerHTML = `
+                    <div class="memory-card-face memory-card-front">${emoji}</div>
+                    <div class="memory-card-face memory-card-back">?</div>
+                `;
+                memoryGrid.appendChild(cardElement);
+            });
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+            }
+            return array;
+        }
+
+        function flipCard(cardElement, emoji, index) {
+            if (waitingForSecondCard || cardElement.classList.contains('flipped') || cardElement.classList.contains('matched')) {
+                return; // Do nothing if already waiting, flipped, or matched
+            }
+
+            cardElement.classList.add('flipped');
+            flippedCards.push({ element: cardElement, emoji: emoji, index: index });
+
+            if (flippedCards.length === 2) {
+                memoryMoves++;
+                document.getElementById('memoryStatus').textContent = `Moves: ${memoryMoves}`;
+                waitingForSecondCard = true; // Prevent further clicks
+
+                const [card1, card2] = flippedCards;
+
+                if (card1.emoji === card2.emoji) {
+                    // Match found
+                    card1.element.classList.add('matched');
+                    card2.element.classList.add('matched');
+                    matchedPairs++;
+                    flippedCards = [];
+                    waitingForSecondCard = false;
+
+                    if (matchedPairs === memoryCards.length / 2) {
+                        setTimeout(() => {
+                            document.getElementById('memoryStatus').textContent = `🎉 You won in ${memoryMoves} moves!`;
+                            document.getElementById('memoryStatus').className = "text-xl font-bold text-green-600 mb-4";
+                        }, 500);
+                    }
+                } else {
+                    // No match, flip back after a delay
+                    setTimeout(() => {
+                        card1.element.classList.remove('flipped');
+                        card2.element.classList.remove('flipped');
+                        flippedCards = [];
+                        waitingForSecondCard = false;
+                    }, 1000);
+                }
+            }
+        }
+
+        function resetMemoryMatch() {
+            initializeMemoryMatch();
+            document.getElementById('memoryStatus').className = "text-xl font-medium text-gray-800 mb-4";
+        }
+
+        // Dice Roll game logic
+        function rollDice() {
+            const diceResultElement = document.getElementById('diceResult');
+            const roll = Math.floor(Math.random() * 6) + 1; // Generate a random number between 1 and 6
+            diceResultElement.textContent = `You rolled a ${roll}!`;
+            // Optional: Add a visual animation for the dice roll
+            diceResultElement.classList.add('animate-bounce');
+            setTimeout(() => {
+                diceResultElement.classList.remove('animate-bounce');
+            }, 500); // Remove bounce after 0.5 seconds
+        }
+
+        // Coin Flip game logic
+        function flipCoin(playerCall) {
+            const coinResultElement = document.getElementById('coinResult');
+            const coinMessageElement = document.getElementById('coinMessage');
+            const outcomes = ['Heads', 'Tails'];
+            const flip = outcomes[Math.floor(Math.random() * outcomes.length)];
+
+            coinResultElement.textContent = `The coin landed on: ${flip}!`;
+
+            if (playerCall === flip) {
+                coinMessageElement.textContent = `You called ${playerCall} and you were right! 🎉`;
+                coinMessageElement.className = "mt-2 text-lg text-green-600 font-semibold";
+            } else {
+                coinMessageElement.textContent = `You called ${playerCall}, but it was ${flip}. Better luck next time! 🙁`;
+                coinMessageElement.className = "mt-2 text-lg text-red-600 font-semibold";
+            }
+        }
+
+        // Higher/Lower game logic
+        let currentCardValue;
+        let higherLowerStreak = 0;
+
+        function initializeHigherLower() {
+            currentCardValue = Math.floor(Math.random() * 13) + 1; // Cards 1-13 (Ace to King)
+            document.getElementById('currentCard').textContent = getCardName(currentCardValue);
+            document.getElementById('higherLowerResult').textContent = '';
+            document.getElementById('higherLowerStreak').textContent = `Streak: ${higherLowerStreak}`;
+            document.getElementById('higherLowerResetButton').classList.add('hidden');
+        }
+
+        function getCardName(value) {
+            switch (value) {
+                case 1: return 'Ace';
+                case 11: return 'Jack';
+                case 12: return 'Queen';
+                case 13: return 'King';
+                default: return value.toString();
+            }
+        }
+
+        function makeHigherLowerGuess(guess) {
+            const nextCardValue = Math.floor(Math.random() * 13) + 1;
+            const higherLowerResultElement = document.getElementById('higherLowerResult');
+            const higherLowerStreakElement = document.getElementById('higherLowerStreak');
+            const resetButton = document.getElementById('higherLowerResetButton');
+
+            let result = '';
+            let correct = false;
+
+            if (guess === 'higher') {
+                if (nextCardValue > currentCardValue) {
+                    result = `Correct! ${getCardName(nextCardValue)} is higher than ${getCardName(currentCardValue)}.`;
+                    correct = true;
+                } else {
+                    result = `Wrong! ${getCardName(nextCardValue)} is not higher than ${getCardName(currentCardValue)}.`;
+                }
+            } else { // guess === 'lower'
+                if (nextCardValue < currentCardValue) {
+                    result = `Correct! ${getCardName(nextCardValue)} is lower than ${getCardName(currentCardValue)}.`;
+                    correct = true;
+                } else {
+                    result = `Wrong! ${getCardName(nextCardValue)} is not lower than ${getCardName(currentCardValue)}.`;
+                }
+            }
+
+            higherLowerResultElement.textContent = result;
+            document.getElementById('currentCard').textContent = getCardName(nextCardValue); // Update current card display
+
+            if (correct) {
+                higherLowerStreak++;
+                higherLowerResultElement.className = "mt-4 text-xl font-bold text-green-600";
+            } else {
+                higherLowerStreak = 0; // Reset streak on wrong guess
+                higherLowerResultElement.className = "mt-4 text-xl font-bold text-red-600";
+                resetButton.classList.remove('hidden'); // Show reset button on loss
+            }
+            higherLowerStreakElement.textContent = `Streak: ${higherLowerStreak}`;
+            currentCardValue = nextCardValue; // Set the next card as the current one for the next round
+        }
+
+        function resetHigherLower() {
+            higherLowerStreak = 0;
+            initializeHigherLower();
+            document.getElementById('higherLowerResetButton').classList.add('hidden');
+        }
+
+        // Timed Clicker game logic
+        let clickCount = 0;
+        let timer;
+        let timeLeft = 10;
+        let clickerGameActive = false;
+
+        function initializeTimedClicker() {
+            clickCount = 0;
+            timeLeft = 10;
+            clickerGameActive = false;
+            document.getElementById('clickerCount').textContent = `Clicks: ${clickCount}`;
+            document.getElementById('clickerTimer').textContent = `Time: ${timeLeft}s`;
+            document.getElementById('clickerButton').textContent = 'Start Clicking!';
+            document.getElementById('clickerButton').onclick = startClickerGame;
+            document.getElementById('clickerButton').disabled = false;
+            document.getElementById('clickerResetButton').classList.add('hidden');
+        }
+
+        function startClickerGame() {
+            if (clickerGameActive) {
+                clickCount++;
+                document.getElementById('clickerCount').textContent = `Clicks: ${clickCount}`;
+            } else {
+                clickerGameActive = true;
+                document.getElementById('clickerButton').textContent = 'Click Me!';
+                document.getElementById('clickerButton').onclick = () => {
+                    clickCount++;
+                    document.getElementById('clickerCount').textContent = `Clicks: ${clickCount}`;
+                };
+                timer = setInterval(() => {
+                    timeLeft--;
+                    document.getElementById('clickerTimer').textContent = `Time: ${timeLeft}s`;
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        clickerGameActive = false;
+                        document.getElementById('clickerButton').textContent = 'Time\'s Up!';
+                        document.getElementById('clickerButton').disabled = true;
+                        document.getElementById('clickerTimer').textContent = `Time: 0s - Final Score: ${clickCount} clicks!`;
+                        document.getElementById('clickerTimer').className = "text-2xl font-bold text-green-600 mb-4";
+                        document.getElementById('clickerResetButton').classList.remove('hidden');
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetClickerGame() {
+            clearInterval(timer);
+            initializeTimedClicker();
+            document.getElementById('clickerTimer').className = "text-2xl font-bold text-red-600 mb-4";
+        }
+
+        // RPSLS (Rock-Paper-Scissors-Lizard-Spock) game logic
+        const rpslsChoices = ['rock', 'paper', 'scissors', 'lizard', 'spock'];
+        const rpslsRules = {
+            rock: ['scissors', 'lizard'],
+            paper: ['rock', 'spock'],
+            scissors: ['paper', 'lizard'],
+            lizard: ['paper', 'spock'],
+            spock: ['rock', 'scissors']
+        };
+
+        function playRPSLS(playerChoice) {
+            const computerChoice = rpslsChoices[Math.floor(Math.random() * rpslsChoices.length)];
+            let result = '';
+
+            if (playerChoice === computerChoice) {
+                result = "It's a tie!";
+            } else if (rpslsRules[playerChoice].includes(computerChoice)) {
+                result = "You win!";
+                window.rpslsPlayerScore++;
+            } else {
+                result = "You lose!";
+                window.rpslsComputerScore++;
+            }
+
+            const rpslsResultElement = document.getElementById('rpslsResult');
+            const rpslsScoreElement = document.getElementById('rpslsScore');
+            rpslsResultElement.textContent = `You chose ${playerChoice}, Computer chose ${computerChoice}. ${result}`;
+            rpslsResultElement.className = `mt-4 text-xl font-bold ${result.includes('win') ? 'text-green-600' : result.includes('lose') ? 'text-red-600' : 'text-blue-600'}`;
+            rpslsScoreElement.textContent = `Score: Player ${window.rpslsPlayerScore} - Computer ${window.rpslsComputerScore}`;
+            document.getElementById('rpslsResetButton').classList.remove('hidden');
+        }
+
+        function resetRPSLS() {
+            window.rpslsPlayerScore = 0;
+            window.rpslsComputerScore = 0;
+            document.getElementById('rpslsResult').textContent = '';
+            document.getElementById('rpslsScore').textContent = 'Score: Player 0 - Computer 0';
+            document.getElementById('rpslsResetButton').classList.add('hidden');
+        }
+
+        // Guess the Color game logic
+        const availableColors = [
+            { name: 'Red', hex: '#EF4444' },
+            { name: 'Blue', hex: '#3B82F6' },
+            { name: 'Green', hex: '#22C55E' },
+            { name: 'Yellow', hex: '#EAB308' },
+            { name: 'Purple', hex: '#A855F7' },
+            { name: 'Orange', hex: '#F97316' },
+            { name: 'Pink', hex: '#EC4899' },
+            { name: 'Cyan', hex: '#06B6D4' }
+        ];
+        let secretColor;
+
+        function initializeGuessTheColor() {
+            secretColor = availableColors[Math.floor(Math.random() * availableColors.length)];
+            const colorOptionsDiv = document.getElementById('colorOptions');
+            colorOptionsDiv.innerHTML = ''; // Clear previous options
+            document.getElementById('colorMessage').textContent = '';
+            document.getElementById('colorResetButton').classList.add('hidden');
+
+            // Shuffle colors for display
+            const shuffledDisplayColors = shuffleArray([...availableColors]);
+
+            shuffledDisplayColors.forEach(color => {
+                const button = document.createElement('button');
+                button.classList.add('px-4', 'py-3', 'rounded-lg', 'shadow-md', 'hover:opacity-80', 'transition', 'duration-300', 'ease-in-out', 'transform', 'hover:scale-105', 'font-semibold', 'text-white');
+                button.style.backgroundColor = color.hex;
+                button.textContent = color.name;
+                button.onclick = () => checkColorGuess(color.name);
+                colorOptionsDiv.appendChild(button);
+            });
+        }
+
+        function checkColorGuess(playerGuessName) {
+            const colorMessageElement = document.getElementById('colorMessage');
+            const colorResetButton = document.getElementById('colorResetButton');
+            const colorOptionsDiv = document.getElementById('colorOptions');
+
+            if (playerGuessName === secretColor.name) {
+                colorMessageElement.textContent = `🎉 Correct! The color was ${secretColor.name}!`;
+                colorMessageElement.className = "mt-6 text-xl font-bold text-green-600";
+                colorResetButton.classList.remove('hidden');
+                // Disable all color buttons
+                Array.from(colorOptionsDiv.children).forEach(button => button.disabled = true);
+            } else {
+                colorMessageElement.textContent = `Nope! It's not ${playerGuessName}. Try again!`;
+                colorMessageElement.className = "mt-6 text-xl font-medium text-red-600";
+            }
+        }
+
+        function resetGuessTheColor() {
+            initializeGuessTheColor();
+            const colorOptionsDiv = document.getElementById('colorOptions');
+            Array.from(colorOptionsDiv.children).forEach(button => button.disabled = false); // Re-enable buttons
+            document.getElementById('colorMessage').className = "mt-6 text-xl font-medium text-gray-800";
+        }
+
+        // Show the game selection on initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            showGameSelection();
+        });
+    </script>
+</body>
+</html>
